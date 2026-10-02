@@ -1,0 +1,18 @@
+# Python virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# IMDb dataset - do NOT upload to GitHub
+data/aclImdb/
+
+# Generated CSV files
+*.csv
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Trained models and vectorizers
+models/*.pkl
