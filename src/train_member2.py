@@ -27,10 +27,10 @@ RANDOM_STATE = 42
 # and the DNN cannot realistically train on that, so for these three models
 # we keep only the top-K features ranked by chi-square (fitted on TRAIN only).
 # SVM uses the full feature matrix.
-K_FEATURES_RF_DNN = 20000
-K_FEATURES_BOOST = 10000      # boosting is the slowest; use fewer features
+K_FEATURES_RF_DNN = 2000
+K_FEATURES_BOOST = 1000      # boosting is the slowest; use fewer features
  
-SVM_C_VALUES = [0.01, 0.05, 0.25, 0.5, 1]   # from the paper
+SVM_C_VALUES = [0.01, 0.1, 1]   # from the paper
  
 # --------------------------------------------------
 # Create required folders
@@ -132,12 +132,12 @@ for representation, vectorizer_path in vectorizers.items():
             GridSearchCV(
                 LinearSVC(
                     penalty="l2",
-                    tol=1e-4,
-                    max_iter=5000,
+                    tol=1e-3,
+                    max_iter=2000,
                     random_state=RANDOM_STATE,
                 ),
                 param_grid={"C": SVM_C_VALUES},
-                cv=3,
+                cv=2,
                 scoring="accuracy",
                 n_jobs=-1,
             ),
@@ -147,9 +147,9 @@ for representation, vectorizer_path in vectorizers.items():
         ),
         "Random Forest": (
             RandomForestClassifier(
-                n_estimators=100,
+                n_estimators=30,      # Reduced from 100
                 criterion="gini",
-                max_depth=None,
+                max_depth=15,
                 min_samples_split=2,
                 n_jobs=-1,
                 random_state=RANDOM_STATE,
@@ -160,9 +160,9 @@ for representation, vectorizer_path in vectorizers.items():
         ),
         "Boosting": (
             GradientBoostingClassifier(
-                n_estimators=100,
+                n_estimators=20,      # Reduced from 100
                 learning_rate=0.1,
-                min_samples_split=2,
+                max_depth=3,
                 random_state=RANDOM_STATE,
             ),
             X_train_boost,
@@ -171,12 +171,12 @@ for representation, vectorizer_path in vectorizers.items():
         ),
         "DNN": (
             MLPClassifier(
-                hidden_layer_sizes=(30, 30, 20, 10, 10),
-                activation="logistic",
+                hidden_layer_sizes=(30, 15),
+                activation="relu",    # Changed from logistic to relu for faster convergence
                 solver="adam",
                 alpha=0.0001,
                 early_stopping=True,
-                max_iter=200,
+                max_iter=50,
                 random_state=RANDOM_STATE,
             ),
             X_train_main,

@@ -102,8 +102,8 @@ for representation, vectorizer_path in vectorizers.items():
     print("\nTraining Logistic Regression...")
 
     lr_model = LogisticRegression(
-        max_iter=3000,
-        solver="saga",
+        max_iter=500,
+        solver="lbfgs",
         random_state=42
     )
 
